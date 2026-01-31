@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 # [Previous data loading code - keeping it the same...]
 print("Loading crop production data...")
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+crop_df = pd.read_csv("crop_production.csv")
 
 crop_df = pd.read_csv(os.path.join(BASE_DIR, "crop_production.csv"))
 #rain_df = pd.read_csv(os.path.join(BASE_DIR, "rainfall.csv"))
@@ -271,6 +271,7 @@ def index():
     #print("\nStarting Flask app on http://127.0.0.1:5000")
     #print("="*70 + "\n")
     #app.run(debug=True, port=5000)
+
 
 
 
