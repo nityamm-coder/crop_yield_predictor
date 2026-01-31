@@ -2,50 +2,51 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>ANN Crop Yield Predictor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANN Crop Yield Indicator</title>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
+            font-family: "Segoe UI", sans-serif;
             background:
-                linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+                linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
                 url("{{ url_for('static', filename='bg.jpg') }}");
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
         }
 
-        .main-container {
-            background: rgba(255, 255, 255, 0.98);
+        .container {
+            background: #fff;
             border-radius: 20px;
             width: 100%;
             max-width: 1200px;
-            box-shadow: 0px 20px 60px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
             overflow: hidden;
         }
 
         .header {
-            background: linear-gradient(135deg, #2e7d32, #43a047);
+            background: #2e7d32;
+            color: white;
             padding: 25px 40px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
         }
 
-        .logo img { width: 70px; height: 70px; }
+        .header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
 
-        .header-text h1 { color: white; font-size: 28px; }
-        .header-text p { color: #e8f5e9; }
+        .header p {
+            margin-top: 6px;
+            opacity: 0.9;
+        }
 
-        .content-wrapper {
+        .content {
             display: grid;
             grid-template-columns: 1fr 1fr;
         }
@@ -57,124 +58,162 @@
 
         .result-section {
             padding: 40px;
-            background: #f5fff5;
+            background: #f4fff5;
         }
 
-        .section-title {
-            font-size: 20px;
+        h2 {
             color: #2e7d32;
-            margin-bottom: 20px;
             border-bottom: 3px solid #2e7d32;
             padding-bottom: 10px;
+            margin-bottom: 25px;
         }
 
-        label { font-weight: 600; margin-bottom: 8px; display: block; }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+        }
+
         input, select {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border-radius: 8px;
             border: 2px solid #ddd;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            font-size: 15px;
         }
 
         button {
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             background: #2e7d32;
             color: white;
-            font-weight: bold;
+            font-size: 16px;
+            font-weight: 600;
             border: none;
             border-radius: 10px;
             cursor: pointer;
         }
 
-        .result-card {
+        button:hover {
+            background: #1b5e20;
+        }
+
+        .card {
             background: white;
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        .yield-value {
+        .yield {
             font-size: 42px;
+            font-weight: bold;
             color: #2e7d32;
             text-align: center;
-            margin: 15px 0;
         }
 
-        .percentage-yield {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 10px;
+        .sub {
             text-align: center;
-            margin-bottom: 15px;
+            color: #666;
+            margin-bottom: 20px;
         }
 
-        .category-badge {
-            text-align: center;
+        .badge {
             padding: 14px;
             border-radius: 30px;
             font-weight: bold;
+            text-align: center;
+            margin-top: 25px;
             text-transform: uppercase;
         }
 
-        .category-low { background: #ffcdd2; color: #b71c1c; }
-        .category-medium { background: #ffe0b2; color: #ef6c00; }
-        .category-high { background: #c8e6c9; color: #1b5e20; }
+        .low { background: #ffd6d6; color: #b71c1c; }
+        .medium { background: #fff0cc; color: #ef6c00; }
+        .high { background: #dcedc8; color: #2e7d32; }
 
-        .environmental-info {
+        .env {
             background: #e3f2fd;
-            padding: 15px;
+            padding: 16px;
             border-radius: 10px;
-            margin-bottom: 15px;
+            margin-top: 20px;
+            color: #0d47a1;
+        }
+
+        .env strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .ranges {
+            background: #f1f8e9;
+            padding: 14px;
+            border-radius: 10px;
+            margin-top: 15px;
+            color: #33691e;
+            font-size: 14px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #777;
+            margin-top: 100px;
         }
 
         @media (max-width: 900px) {
-            .content-wrapper { grid-template-columns: 1fr; }
-            .form-section { border-right: none; border-bottom: 2px solid #eee; }
+            .content {
+                grid-template-columns: 1fr;
+            }
+            .form-section {
+                border-right: none;
+                border-bottom: 2px solid #eee;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="main-container">
+<div class="container">
 
     <div class="header">
-        <div class="logo">
-            <img src="{{ url_for('static', filename='logo.png') }}">
-        </div>
-        <div class="header-text">
-            <h1>ANN Crop Yield Predictor</h1>
-            <p>Neural Network Based Agricultural Analysis</p>
-        </div>
+        <h1>🌾 ANN Crop Yield Predictor</h1>
+        <p>Neural Network Based Agricultural Analysis</p>
     </div>
 
-    <div class="content-wrapper">
+    <div class="content">
 
         <!-- FORM -->
         <div class="form-section">
-            <h2 class="section-title">📝 Input Parameters</h2>
+            <h2>Input Parameters</h2>
+
             <form method="post">
 
                 <label>Crop</label>
                 <select name="crop" required>
                     <option value="">Select Crop</option>
                     {% for crop in crops %}
-                    <option value="{{ crop }}">{{ crop }}</option>
+                    <option value="{{ crop }}" {% if crop == selected_crop %}selected{% endif %}>
+                        {{ crop }}
+                    </option>
                     {% endfor %}
                 </select>
 
                 <label>Area (hectares)</label>
-                <input type="number" step="0.01" name="area" required>
+                <input type="number" step="0.01" name="area" min="0.01"
+                       value="{{ area if area is not none else '' }}" required>
 
                 <label>Production (tons)</label>
-                <input type="number" step="0.01" name="production" required>
+                <input type="number" step="0.01" name="production" min="0"
+                       value="{{ production if production is not none else '' }}" required>
 
                 <label>Rainfall (mm)</label>
-                <input type="number" step="0.1" name="rainfall" required>
+                <input type="number" step="0.1" name="rainfall" min="0"
+                       value="{{ rainfall if rainfall is not none else '' }}" required>
 
                 <label>Temperature (°C)</label>
-                <input type="number" step="0.1" name="temperature" required>
+                <input type="number" step="0.1" name="temperature"
+                       value="{{ temperature if temperature is not none else '' }}" required>
 
                 <button type="submit">🔍 Predict Yield Category</button>
             </form>
@@ -182,34 +221,44 @@
 
         <!-- RESULT -->
         <div class="result-section">
-            <h2 class="section-title">📊 Prediction Results</h2>
+            <h2>Prediction Results</h2>
 
-            {% if result %}
-            <div class="result-card">
-                <h3 style="text-align:center;">✅ Analysis Complete</h3>
+            {% if result and 'Error' not in result %}
+            <div class="card">
 
-                <div class="yield-value">
-                    {{ estimated_yield }} <span style="font-size:16px;">tons/hectare</span>
+                <div class="yield">
+                    {{ "%.2f"|format(estimated_yield) }}
                 </div>
+                <div class="sub">tons / hectare</div>
 
-                <div class="percentage-yield">
-                    <strong>Yield Efficiency</strong><br>
-                    {{ yield_efficiency }}%
-                </div>
-
-                {% if environmental_impact %}
-                <div class="environmental-info">
-                    <strong>🌍 Environmental Conditions</strong><br>
+                <div class="env">
+                    <strong>🌍 Environmental Feedback</strong>
                     {{ environmental_impact }}
+                </div>
+
+                {% if crop_ranges %}
+                <div class="ranges">
+                    <strong>Optimal Conditions for {{ selected_crop }}</strong><br>
+                    🌡 Temperature: {{ crop_ranges.temp_min }}°C – {{ crop_ranges.temp_max }}°C<br>
+                    🌧 Rainfall: {{ crop_ranges.rain_min }} – {{ crop_ranges.rain_max }} mm
                 </div>
                 {% endif %}
 
-                <div class="category-badge category-{{ result.lower() }}">
+                <div class="badge {{ result.lower() }}">
                     {{ result }} Yield
                 </div>
+
             </div>
+
+            {% elif result %}
+            <div class="card low">
+                {{ result }}
+            </div>
+
             {% else %}
-            <p style="text-align:center;color:#666;">Fill the form to see prediction</p>
+            <div class="empty">
+                📊 Enter values and click <strong>Predict</strong>
+            </div>
             {% endif %}
         </div>
 
