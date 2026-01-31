@@ -14,7 +14,7 @@ print("Loading crop production data...")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 crop_df = pd.read_csv(os.path.join(BASE_DIR, "crop_production.csv"))
-rain_df = pd.read_csv(os.path.join(BASE_DIR, "rainfall.csv"))
+#rain_df = pd.read_csv(os.path.join(BASE_DIR, "rainfall.csv"))
 crop_df = crop_df.dropna()
 crop_df = crop_df[["State_Name", "Crop_Year", "Crop", "Area", "Production"]]
 crop_df["Year"] = crop_df["Crop_Year"].astype(str).str[:4].astype(int)
@@ -271,5 +271,6 @@ def index():
     #print("\nStarting Flask app on http://127.0.0.1:5000")
     #print("="*70 + "\n")
     #app.run(debug=True, port=5000)
+
 
 
