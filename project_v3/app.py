@@ -257,13 +257,14 @@ def index():
         environmental_impact=environmental_impact
     )
 
-if __name__ == "__main__":
-    print("\n" + "="*70)
-    print("🌾 ANN-Based Crop Yield Prediction System")
-    print("="*70)
-    print("✅ Hybrid ANN + Rule-Based Validation")
-    print("✅ Neural Network learns patterns, rules ensure consistency")
-    print("="*70)
-    print("\nStarting Flask app on http://127.0.0.1:5000")
-    print("="*70 + "\n")
-    app.run(debug=True, port=5000)
+#if __name__ == "__main__":
+    #print("\n" + "="*70)
+    #print("🌾 ANN-Based Crop Yield Prediction System")
+    #print("="*70)
+    #print("✅ Hybrid ANN + Rule-Based Validation")
+    #print("✅ Neural Network learns patterns, rules ensure consistency")
+    #print("="*70)
+    #print("\nStarting Flask app on http://127.0.0.1:5000")
+    #print("="*70 + "\n")
+    #app.run(debug=True, port=5000)
+
