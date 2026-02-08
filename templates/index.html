@@ -2,171 +2,404 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ANN Crop Yield Predictor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANN Crop Yield Indicator</title>
 
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: "Segoe UI", sans-serif;
-            background:
-                linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
                 url("{{ url_for('static', filename='bg.jpg') }}");
             background-size: cover;
             background-position: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 30px;
+            background-attachment: fixed;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
 
-        .container {
-            background: #fff;
+        .main-container {
+            background: rgba(255, 255, 255, 0.98);
             border-radius: 20px;
             width: 100%;
             max-width: 1200px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            box-shadow: 0px 20px 60px rgba(0, 0, 0, 0.5);
             overflow: hidden;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .header {
-            background: #2e7d32;
-            color: white;
+            background: linear-gradient(135deg, #2e7d32, #43a047);
             padding: 25px 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .header h1 {
-            margin: 0;
-            font-size: 30px;
+        .logo {
+            width: 70px;
+            height: 70px;
+        }
+        
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0px 4px 10px rgba(255, 255, 255, 0.3));
         }
 
-        .header p {
-            margin-top: 6px;
-            opacity: 0.9;
+        .header-text h1 {
+            color: white;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
         }
 
-        .content {
+        .header-text p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+        }
+
+        .content-wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 500px;
         }
 
         .form-section {
             padding: 40px;
-            border-right: 2px solid #eee;
+            background: white;
+            border-right: 2px solid #f0f0f0;
         }
 
         .result-section {
             padding: 40px;
-            background: #f4fff5;
+            background: linear-gradient(135deg, #f8fdf8, #e8f5e9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        h2 {
+        .section-title {
             color: #2e7d32;
-            border-bottom: 3px solid #2e7d32;
-            padding-bottom: 10px;
+            font-size: 20px;
+            font-weight: 600;
             margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #2e7d32;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
         }
 
         label {
             font-weight: 600;
+            color: #333;
             display: block;
             margin-bottom: 8px;
+            font-size: 15px;
         }
 
-        input, select {
+        select, input {
             width: 100%;
-            padding: 14px;
+            padding: 14px 16px;
             border-radius: 8px;
-            border: 2px solid #ddd;
-            margin-bottom: 20px;
-            font-size: 15px;
+            border: 2px solid #e0e0e0;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
+        select:hover, input:hover {
+            border-color: #66bb6a;
+        }
+
+        input::placeholder {
+            color: #999;
         }
 
         button {
             width: 100%;
             padding: 16px;
-            background: #2e7d32;
+            background: linear-gradient(135deg, #2e7d32, #43a047);
             color: white;
-            font-size: 16px;
-            font-weight: 600;
             border: none;
             border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0px 4px 15px rgba(46, 125, 50, 0.3);
         }
 
         button:hover {
-            background: #1b5e20;
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
+            transform: translateY(-2px);
+            box-shadow: 0px 6px 20px rgba(46, 125, 50, 0.4);
         }
 
-        .card {
+        button:active {
+            transform: translateY(0);
+        }
+
+        .input-hint {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .rainfall-icon::before {
+            content: "🌧️ ";
+        }
+
+        .temperature-icon::before {
+            content: "🌡️ ";
+        }
+
+        .crop-icon::before {
+            content: "🌾 ";
+        }
+
+        .area-icon::before {
+            content: "📏 ";
+        }
+
+        .production-icon::before {
+            content: "📊 ";
+        }
+
+        /* Result Styles */
+        .result-empty {
+            text-align: center;
+            color: #999;
+            padding: 60px 20px;
+        }
+
+        .result-empty-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .result-empty p {
+            font-size: 17px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .result-card {
             background: white;
             padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in;
         }
 
-        .yield {
-            font-size: 42px;
-            font-weight: bold;
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .result-card h3 {
             color: #2e7d32;
-            text-align: center;
-        }
-
-        .sub {
-            text-align: center;
-            color: #666;
+            font-size: 24px;
             margin-bottom: 20px;
-        }
-
-        .badge {
-            padding: 14px;
-            border-radius: 30px;
-            font-weight: bold;
             text-align: center;
-            margin-top: 25px;
-            text-transform: uppercase;
+            font-weight: 700;
         }
 
-        .low { background: #ffd6d6; color: #b71c1c; }
-        .medium { background: #fff0cc; color: #ef6c00; }
-        .high { background: #dcedc8; color: #2e7d32; }
-
-        .env {
-            background: #e3f2fd;
-            padding: 16px;
-            border-radius: 10px;
-            margin-top: 20px;
-            color: #0d47a1;
+        .result-item {
+            margin: 15px 0;
+            padding: 14px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #2e7d32;
         }
 
-        .env strong {
-            display: block;
+        .result-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 600;
             margin-bottom: 6px;
         }
 
-        .ranges {
-            background: #f1f8e9;
-            padding: 14px;
-            border-radius: 10px;
-            margin-top: 15px;
-            color: #33691e;
-            font-size: 14px;
+        .result-value {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
         }
 
-        .empty {
+        .yield-value {
+            font-size: 42px;
+            color: #2e7d32;
+            font-weight: bold;
             text-align: center;
-            color: #777;
-            margin-top: 100px;
+            margin: 20px 0 10px 0;
+            line-height: 1;
         }
 
-        @media (max-width: 900px) {
-            .content {
+        .yield-unit {
+            font-size: 16px;
+            color: #666;
+            font-weight: normal;
+        }
+
+        .percentage-yield {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+            border: 2px solid #1976d2;
+        }
+
+        .percentage-yield-label {
+            font-size: 13px;
+            color: #1565c0;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .percentage-yield-value {
+            font-size: 36px;
+            color: #1976d2;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .percentage-symbol {
+            font-size: 24px;
+        }
+
+        .category-badge {
+            display: block;
+            text-align: center;
+            padding: 14px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 20px;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .category-low {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            color: #c62828;
+        }
+
+        .category-medium {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            color: #ef6c00;
+        }
+
+        .category-high {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: #2e7d32;
+        }
+
+        .error-card {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #c62828;
+            text-align: center;
+        }
+
+        .error-card h3 {
+            color: #c62828;
+            margin-bottom: 10px;
+        }
+
+        .environmental-info {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 16px 18px;
+            border-radius: 10px;
+            font-size: 15px;
+            color: #0d47a1;
+            margin: 15px 0;
+            border-left: 5px solid #1976d2;
+            line-height: 1.6;
+        }
+
+        .environmental-info strong {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 8px;
+            color: #1565c0;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .content-wrapper {
                 grid-template-columns: 1fr;
             }
+
             .form-section {
                 border-right: none;
-                border-bottom: 2px solid #eee;
+                border-bottom: 2px solid #f0f0f0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 20px;
+            }
+
+            .header-text h1 {
+                font-size: 22px;
+            }
+
+            .form-section, .result-section {
+                padding: 25px;
             }
         }
     </style>
@@ -174,95 +407,146 @@
 
 <body>
 
-<div class="container">
-
+<div class="main-container">
+    
+    <!-- Header -->
     <div class="header">
-        <h1>🌾 ANN Crop Yield Predictor</h1>
-        <p>Neural Network Based Agricultural Analysis</p>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+        </div>
+        <div class="header-text">
+            <h1>ANN Crop Yield Predictor</h1>
+            <p>Artificial Neural Network Based Agricultural Analysis</p>
+        </div>
     </div>
 
-    <div class="content">
-
-        <!-- FORM -->
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        
+        <!-- Left Side: Form -->
         <div class="form-section">
-            <h2>Input Parameters</h2>
-
+            <h2 class="section-title">📝 Input Parameters</h2>
+            
             <form method="post">
+                <div class="form-group">
+                    <label class="crop-icon">Crop Type</label>
+                    <select name="crop" required>
+                        <option value="">-- Select Crop --</option>
+                        {% for crop in crops %}
+                        <option value="{{ crop }}"
+                            {% if crop == selected_crop %}selected{% endif %}>
+                            {{ crop }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                <label>Crop</label>
-                <select name="crop" required>
-                    <option value="">Select Crop</option>
-                    {% for crop in crops %}
-                    <option value="{{ crop }}" {% if crop == selected_crop %}selected{% endif %}>
-                        {{ crop }}
-                    </option>
-                    {% endfor %}
-                </select>
+                <div class="form-group">
+                    <label class="area-icon">Cultivated Area (hectares)</label>
+                    <input type="number" step="0.01" name="area"
+                           value="{{ area if area is not none else '' }}" 
+                           placeholder="e.g. 10.50"
+                           min="0.01"
+                           required>
+                    <div class="input-hint">Total area of cultivation</div>
+                </div>
 
-                <label>Area (hectares)</label>
-                <input type="number" step="0.01" name="area" min="0.01"
-                       value="{{ area if area is not none else '' }}" required>
+                <div class="form-group">
+                    <label class="production-icon">Total Production (tons)</label>
+                    <input type="number" step="0.01" name="production"
+                           value="{{ production if production is not none else '' }}"
+                           placeholder="e.g. 25.00"
+                           min="0"
+                           required>
+                    <div class="input-hint">Total crop production</div>
+                </div>
 
-                <label>Production (tons)</label>
-                <input type="number" step="0.01" name="production" min="0"
-                       value="{{ production if production is not none else '' }}" required>
+                <div class="form-group">
+                    <label class="rainfall-icon">Annual Rainfall (mm)</label>
+                    <input type="number" step="0.1" name="rainfall"
+                           value="{{ rainfall if rainfall is not none else '' }}"
+                           placeholder="e.g. 1200.5"
+                           min="0"
+                           required>
+                    <div class="input-hint">Average annual rainfall</div>
+                </div>
 
-                <label>Rainfall (mm)</label>
-                <input type="number" step="0.1" name="rainfall" min="0"
-                       value="{{ rainfall if rainfall is not none else '' }}" required>
-
-                <label>Temperature (°C)</label>
-                <input type="number" step="0.1" name="temperature"
-                       value="{{ temperature if temperature is not none else '' }}" required>
+                <div class="form-group">
+                    <label class="temperature-icon">Average Temperature (°C)</label>
+                    <input type="number" step="0.1" name="temperature"
+                           value="{{ temperature if temperature is not none else '' }}"
+                           placeholder="e.g. 25.5"
+                           min="-10"
+                           max="50"
+                           required>
+                    <div class="input-hint">Average annual temperature</div>
+                </div>
 
                 <button type="submit">🔍 Predict Yield Category</button>
             </form>
         </div>
 
-        <!-- RESULT -->
+        <!-- Right Side: Results -->
         <div class="result-section">
-            <h2>Prediction Results</h2>
+            <h2 class="section-title">📊 Prediction Results</h2>
+            
+            {% if result %}
+                {% if 'Error' not in result %}
+                <div class="result-card">
+                    <h3>✅ Analysis Complete</h3>
+                    
+                    <div class="result-item">
+                        <div class="result-label">Selected Crop</div>
+                        <div class="result-value">{{ selected_crop }}</div>
+                    </div>
 
-            {% if result and 'Error' not in result %}
-            <div class="card">
+                    <div class="yield-value">
+                        {{ "%.2f"|format(estimated_yield) }}
+                        <span class="yield-unit">tons/hectare</span>
+                    </div>
 
-                <div class="yield">
-                    {{ "%.2f"|format(estimated_yield) }}
+                    <div class="percentage-yield">
+                        <div class="percentage-yield-label">Yield Efficiency</div>
+                        <div class="percentage-yield-value">
+                            {{ "%.1f"|format((estimated_yield / (production / area if area > 0 else 1)) * 100) }}<span class="percentage-symbol">%</span>
+                        </div>
+                    </div>
+
+                    {% if environmental_impact %}
+                    <div class="environmental-info">
+                        <strong>🌍 Environmental Conditions</strong>
+                        {{ environmental_impact }}
+                    </div>
+                    {% endif %}
+
+                    <div class="category-badge category-{{ result.lower() }}">
+                        {{ result }} Yield
+                    </div>
                 </div>
-                <div class="sub">tons / hectare</div>
-
-                <div class="env">
-                    <strong>🌍 Environmental Feedback</strong>
-                    {{ environmental_impact }}
-                </div>
-
-                {% if crop_ranges %}
-                <div class="ranges">
-                    <strong>Optimal Conditions for {{ selected_crop }}</strong><br>
-                    🌡 Temperature: {{ crop_ranges.temp_min }}°C – {{ crop_ranges.temp_max }}°C<br>
-                    🌧 Rainfall: {{ crop_ranges.rain_min }} – {{ crop_ranges.rain_max }} mm
+                {% else %}
+                <div class="error-card">
+                    <h3>⚠️ Error</h3>
+                    <p>{{ result }}</p>
+                    <p style="font-size: 12px; margin-top: 10px;">Please check your input values and try again.</p>
                 </div>
                 {% endif %}
-
-                <div class="badge {{ result.lower() }}">
-                    {{ result }} Yield
-                </div>
-
-            </div>
-
-            {% elif result %}
-            <div class="card low">
-                {{ result }}
-            </div>
-
             {% else %}
-            <div class="empty">
-                📊 Enter values and click <strong>Predict</strong>
+            <div class="result-empty">
+                <div class="result-empty-icon">📈</div>
+                <p><strong>No prediction yet</strong></p>
+                <p style="margin-top: 10px;">Fill in the form and click "Predict Yield Category"<br>to see the results here</p>
             </div>
             {% endif %}
         </div>
 
     </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        🌱 ANN Mini Project | Made By: Nityam Mishra<br>
+        <small>Powered by Neural Networks • Advanced Agricultural Analytics</small>
+    </div>
+
 </div>
 
 </body>
